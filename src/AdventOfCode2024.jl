@@ -1,4 +1,4 @@
-module AdventOfCode<year>
+module AdventOfCode2024
 
 export Day01
 export Day02
@@ -59,4 +59,4 @@ include("Day23.jl")
 include("Day24.jl")
 include("Day25.jl")
 
-end # module AdventOfCode<year>
+end # module AdventOfCode2024
