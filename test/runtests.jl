@@ -1,6 +1,6 @@
 using Test
 
-using AdventOfCode<year>
+using AdventOfCode2024
 
 day_modules = [
     Day01,
@@ -32,7 +32,7 @@ day_modules = [
 
 module_name(Mod) = last(rsplit(repr("text/plain", Mod), "."; limit=2))
 
-@testset "AdventOfCode<year>" begin
+@testset "AdventOfCode2024" begin
     @testset "$(module_name(DayModule))" for DayModule in day_modules
         DayModule.test_hints_star1()
         DayModule.test_hints_star2()
