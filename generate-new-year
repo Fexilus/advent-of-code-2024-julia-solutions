@@ -1,0 +1,41 @@
+#!/bin/sh
+set -eu
+
+soft_run=
+while getopts "s" opt; do
+    case "$opt" in
+        s)  soft_run=1
+    esac
+done
+
+# Move to the repo that this script resides in
+cd "$(dirname "$0")"
+
+# Generate and extract metadata needed
+year="$(date +"%Y")"
+uuid="$(julia -e "using UUIDs; print(UUIDs.uuid4())")"
+name="$(git config user.name)"
+email="$(git config user.email)"
+
+# Use metadata to generate customized project files
+sed -e "s/<year>/$year/g" \
+    -e "s/<uuid>/$uuid/g" \
+    -e "s/<name>/$name/g" \
+    -e "s/<email>/$email/g" \
+    Project.toml.template > Project.toml
+
+sed -e "s/<year>/$year/g" \
+    "src/AdventOfCode<year>.jl" > "src/AdventOfCode$year.jl"
+
+sed -e "s/<year>/$year/g" \
+    test/runtests.jl.template > test/runtests.jl
+
+# Remove template files and generation scripts
+if [ -z "$soft_run" ]; then
+    git rm README.org
+    git rm Project.toml.template
+    git rm test/runtests.jl.template
+    git rm "src/AdventOfCode<year>.jl"
+    git rm generate-day-files
+    git rm generate-new-year
+fi
