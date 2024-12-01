@@ -28,12 +28,14 @@ function star1(input=stdin)
     right_list = Int[]
 
     for (left, right) in parse_input(input)
-
         push!(left_list, left)
         push!(right_list, right)
     end
 
-    return sum(zip(sort(left_list), sort(right_list))) do (left, right)
+    sort!(left_list)
+    sort!(right_list)
+
+    return sum(zip(left_list, right_list)) do (left, right)
         abs(left - right)
     end
 end
