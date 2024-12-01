@@ -1,2 +1,5 @@
+#!/bin/sh
+set -eu
+
 git config --local alias.tag-solved '!f(){ git tag -m "Solutions to both stars of day $1" "$(printf "day%02u-solved" $1)" $2; };f'
 git config --local alias.tag-done '!f(){ git tag -m "Cleaned up solution to day $1" "$(printf "day%02u-done" $1)" $2; };f'
