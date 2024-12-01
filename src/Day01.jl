@@ -2,6 +2,8 @@ module Day01
 
 using Test
 
+using DataStructures: counter, inc!
+
 using ..Utils: DATA_DIR
 
 export input_file
@@ -57,17 +59,16 @@ end
 
 function star2(input=stdin)
     left_list = Int[]
-    right_occurances = Dict{Int, Int}()
+    right_occurances = counter(Int)
 
     for (left, right) in parse_input(input)
         push!(left_list, left)
 
-        get!(right_occurances, right, 0)
-        right_occurances[right] += 1
+        inc!(right_occurances, right)
     end
 
     return sum(left_list) do left
-        left * get!(right_occurances, left, 0)
+        left * right_occurances[left]
     end
 end
 
