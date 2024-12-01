@@ -49,22 +49,17 @@ end
 
 function star2(input=stdin)
     left_list = Int[]
-    right_list = Int[]
+    right_occurances = Dict{Int, Int}()
 
     for line in eachline(input)
         left, right = split(line; limit=2)
 
         push!(left_list, parse(Int, left))
-        push!(right_list, parse(Int, right))
+
+        right_val = parse(Int, right)
+        get!(right_occurances, right_val, 0)
+        right_occurances[right_val] += 1
     end
-    right_occurances = Dict{Int, Int}()
-
-    for right in right_list
-        old_val = get!(right_occurances, right, 0)
-
-        right_occurances[right] = old_val + 1
-    end
-
 
     return sum(left_list) do left
         left * get!(right_occurances, left, 0)
