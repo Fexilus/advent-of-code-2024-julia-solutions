@@ -1,0 +1,47 @@
+#!/bin/sh
+set -eu
+
+cd "$(dirname "$0")"
+
+data_dir="data"
+
+aoc_website="https://adventofcode.com"
+year=2024
+session_cookie_file=".session-cookie"
+
+# Parse flags
+day="$(TZ=EST date +"%-d")"
+while getopts "d:" opt; do
+    case "$opt" in
+        d)  day="$(printf "%u" "$OPTARG")"
+    esac
+done
+shift $(($OPTIND - 1))
+
+# Check if the session cookie is given as a positional argument
+if [ "$#" -eq 0 ]; then
+    if [ -f "$session_cookie_file" ]; then
+        read -r session_cookie < "$session_cookie_file"
+    else
+        echo "No session cookie. Place one in $session_cookie_file or add as an argument."
+        exit 1
+    fi
+else
+    session_cookie="$1"
+    shift
+fi
+
+target_file="$data_dir/day$(printf "%02u" "$day").input"
+
+if [ ! -f "$target_file" ]; then
+    # Use a temporary file in case the page fetch fails
+    temp_file="$(mktemp)"
+
+    wget --header "Cookie: session=$session_cookie" \
+         --output-document "$temp_file" \
+         "$aoc_website/$year/day/$day/input"
+
+    mv "$temp_file" "$target_file"
+else
+    echo "$target_file already exists"
+fi
