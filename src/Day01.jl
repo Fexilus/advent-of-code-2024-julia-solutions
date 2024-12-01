@@ -16,15 +16,21 @@ input_file = joinpath(DATA_DIR, "day01.input")
 ans1_file = joinpath(DATA_DIR, "day01.ans1")
 ans2_file = joinpath(DATA_DIR, "day01.ans2")
 
+function parse_line(line)
+    left, right = split(line; limit=2)
+    return parse(Int, left), parse(Int, right)
+end
+
+parse_input(input) = Iterators.map(parse_line, eachline(input))
+
 function star1(input=stdin)
     left_list = Int[]
     right_list = Int[]
 
-    for line in eachline(input)
-        left, right = split(line; limit=2)
+    for (left, right) in parse_input(input)
 
-        push!(left_list, parse(Int, left))
-        push!(right_list, parse(Int, right))
+        push!(left_list, left)
+        push!(right_list, right)
     end
 
     return sum(zip(sort(left_list), sort(right_list))) do (left, right)
@@ -51,14 +57,11 @@ function star2(input=stdin)
     left_list = Int[]
     right_occurances = Dict{Int, Int}()
 
-    for line in eachline(input)
-        left, right = split(line; limit=2)
+    for (left, right) in parse_input(input)
+        push!(left_list, left)
 
-        push!(left_list, parse(Int, left))
-
-        right_val = parse(Int, right)
-        get!(right_occurances, right_val, 0)
-        right_occurances[right_val] += 1
+        get!(right_occurances, right, 0)
+        right_occurances[right] += 1
     end
 
     return sum(left_list) do left
