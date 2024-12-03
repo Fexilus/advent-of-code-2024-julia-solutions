@@ -46,17 +46,17 @@ function star2(input=stdin)
     s = 0
     disabled = false
     for line in eachline(input)
-        @info "$line"
+        @debug "Parsing" line
         index = 1
         while index != length(line)
             if disabled
                 next_do = match(do_regex, line, index)
 
                 if isnothing(next_do)
-                    @info "Found no more do"
+                    @debug "Found no more do"
                     break
                 else
-                    @info "Found a do" next_do
+                    @debug "Found a do at" next_do.offset
                     index = next_do.offset + length(next_do)
                     disabled = false
                 end
@@ -65,22 +65,23 @@ function star2(input=stdin)
                 next_dont = match(dont_regex, line, index)
 
                 if isnothing(next_mul)
-                    @info "Line done"
+                    @debug "Found no more mul"
                     break
                 elseif isnothing(next_dont) || next_mul.offset < next_dont.offset
-                    @info "Found mul first" next_mul
+                    @debug "Found mul first at" next_mul.offset, next_mul
                     num1 = parse(Int, next_mul.captures[1])
                     num2 = parse(Int, next_mul.captures[2])
                     s += num1 * num2
 
                     index = next_mul.offset + length(next_mul)
                 else
-                    @info "Found don't first" next_dont
+                    @debug "Found don't first at" next_dont.offset
                     index = next_dont.offset + length(next_dont)
                     disabled = true
                 end
             end
         end
+        @debug "Line done"
     end
 
     return s
