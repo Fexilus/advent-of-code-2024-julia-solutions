@@ -1,5 +1,7 @@
 module AdventOfCode2024
 
+export Utils
+
 export Day01
 export Day02
 export Day03
@@ -27,10 +29,23 @@ export Day24
 export Day25
 
 module Utils
+    using Logging
+
     export DATA_DIR
+    export @with_debug
 
     const BASE_DIR = dirname(dirname(@__FILE__))
     const DATA_DIR = joinpath(BASE_DIR, "data")
+
+    macro with_debug(expr)
+        logger = ConsoleLogger(Logging.Debug; show_limited=false)
+
+        quote
+            with_logger($logger) do
+                $(esc(expr))
+            end
+        end
+    end
 end
 
 include("Day01.jl")
