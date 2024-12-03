@@ -18,13 +18,18 @@ ans2_file = joinpath(DATA_DIR, "day03.ans2")
 
 mul_regex = r"mul\((\d{1,3}),(\d{1,3})\)"
 
+function parse_mul_match(regex_match)
+    num1 = parse(Int, regex_match.captures[1])
+    num2 = parse(Int, regex_match.captures[2])
+
+    return num1 * num2
+end
+
 function star1(input=stdin)
     s = 0
     for line in eachline(input)
         for regex_match in eachmatch(mul_regex, line)
-            num1 = parse(Int, regex_match.captures[1])
-            num2 = parse(Int, regex_match.captures[2])
-            s += num1 * num2
+            s += parse_mul_match(regex_match)
         end
     end
 
@@ -47,6 +52,7 @@ function star2(input=stdin)
     disabled = false
     for line in eachline(input)
         @debug "Parsing" line
+
         index = 1
         while index != length(line)
             if disabled
@@ -57,7 +63,9 @@ function star2(input=stdin)
                     break
                 else
                     @debug "Found a do at" next_do.offset
+
                     index = next_do.offset + length(next_do)
+
                     disabled = false
                 end
             else
@@ -69,18 +77,20 @@ function star2(input=stdin)
                     break
                 elseif isnothing(next_dont) || next_mul.offset < next_dont.offset
                     @debug "Found mul first at" next_mul.offset, next_mul
-                    num1 = parse(Int, next_mul.captures[1])
-                    num2 = parse(Int, next_mul.captures[2])
-                    s += num1 * num2
+
+                    s += parse_mul_match(next_mul)
 
                     index = next_mul.offset + length(next_mul)
                 else
                     @debug "Found don't first at" next_dont.offset
+
                     index = next_dont.offset + length(next_dont)
+
                     disabled = true
                 end
             end
         end
+
         @debug "Line done"
     end
 
