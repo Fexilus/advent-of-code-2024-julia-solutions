@@ -86,7 +86,7 @@ function safe_report_old_old(report; dampener=true)
         end
     end
 
-    @info "" report, increasing, decreasing
+    @debug "" report, increasing, decreasing
 
     return increasing || decreasing
 end
@@ -126,8 +126,8 @@ function safe_report_old(report; dampener=true)
     end
 
     if !(increasing || decreasing)
-        @info "Diff" diff(report)
-        @info "Results" increasing, decreasing
+        @debug "Diff" diff(report)
+        @debug "Results" increasing, decreasing
     end
     
     return increasing || decreasing
@@ -164,8 +164,8 @@ function safe_report(report; dampener=true)
     end
 
     if !(increasing || decreasing)
-        @info "Diff" diff(report)
-        @info "Results" increasing, decreasing
+        @debug "Diff" diff(report)
+        @debug "Results" increasing, decreasing
     end
     
     return increasing || decreasing
