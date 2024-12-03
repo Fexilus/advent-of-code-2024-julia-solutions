@@ -19,3 +19,5 @@ docs/site/
 
 # File containing private session cookie
 .session-cookie
+# Directory with personal problem inputs and answers
+data
