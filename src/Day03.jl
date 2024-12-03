@@ -31,9 +31,7 @@ function star1(input=stdin)
     return s
 end
 
-hint1 = """
-    xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))
-    """
+hint1 = "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))"
 
 function test_hints_star1()
     @testset "Star 1 hints" begin
@@ -88,9 +86,7 @@ function star2(input=stdin)
     return s
 end
 
-hint2 = """
-    xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))
-    """
+hint2 = "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))"
 
 function test_hints_star2()
     @testset "Star 2 hints" begin
