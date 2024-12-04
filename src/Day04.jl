@@ -72,14 +72,44 @@ function test_hints_star1()
 end
 
 function star2(input=stdin)
-end
+    matrix = parse_input(input)
 
-hint2 = """
-    """
+    c = 0
+    for transformed_matrix in [matrix, rotl90(matrix), rot180(matrix), rotr90(matrix)]
+        for i in eachindex(IndexCartesian(), transformed_matrix)
+            k, l = Tuple(i)
+            if transformed_matrix[k, l] == 'M'
+                if (k ≤ size(transformed_matrix, 2) - 2
+                    && l ≤ size(transformed_matrix, 1) - 2
+                    && transformed_matrix[k + 1, l + 1] == 'A'
+                    && transformed_matrix[k + 2, l + 2] == 'S'
+                    && transformed_matrix[k + 2, l    ] == 'M'
+                    && transformed_matrix[k    , l + 2] == 'S'
+                   )
+
+                    c += 1
+                end
+                if (k ≤ size(transformed_matrix, 2) - 2
+                    && l ≤ size(transformed_matrix, 1) - 2
+                    && transformed_matrix[k + 1, l + 1] == 'A'
+                    && transformed_matrix[k + 2, l + 2] == 'S'
+                    && transformed_matrix[k    , l + 2] == 'M'
+                    && transformed_matrix[k + 2, l    ] == 'S'
+                   )
+
+                    c += 1
+                end
+            end
+        end
+    end
+
+    # Each shape is counted twice
+    return c ÷ 2
+end
 
 function test_hints_star2()
     @testset "Star 2 hints" begin
-        #@test star2(IOBuffer(hint2)) ==
+        @test star2(IOBuffer(hint1)) == 9
     end
 end
 
