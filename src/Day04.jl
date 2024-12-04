@@ -89,22 +89,11 @@ function star2(input=stdin)
 
                     c += 1
                 end
-                if (k ≤ size(transformed_matrix, 2) - 2
-                    && l ≤ size(transformed_matrix, 1) - 2
-                    && transformed_matrix[k + 1, l + 1] == 'A'
-                    && transformed_matrix[k + 2, l + 2] == 'S'
-                    && transformed_matrix[k    , l + 2] == 'M'
-                    && transformed_matrix[k + 2, l    ] == 'S'
-                   )
-
-                    c += 1
-                end
             end
         end
     end
 
-    # Each shape is counted twice
-    return c ÷ 2
+    return c
 end
 
 function test_hints_star2()
