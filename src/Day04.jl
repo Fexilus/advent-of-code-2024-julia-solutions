@@ -1,6 +1,5 @@
 module Day04
 
-using Base: Cartesian
 using Test
 
 using ..Utils: DATA_DIR
@@ -27,7 +26,6 @@ function star1(input=stdin)
         for i in eachindex(IndexCartesian(), transformed_matrix)
             k, l = Tuple(i)
             if transformed_matrix[k, l] == 'X'
-                @debug "" transformed_matrix
                 if (k ≤ size(transformed_matrix, 2) - 3
                     && transformed_matrix[k + 1, l] == 'M'
                     && transformed_matrix[k + 2, l] == 'A'
@@ -36,6 +34,7 @@ function star1(input=stdin)
 
                     c += 1
                 end
+
                 if (k ≤ size(transformed_matrix, 2) - 3
                     && l ≤ size(transformed_matrix, 1) - 3
                     && transformed_matrix[k + 1, l + 1] == 'M'
