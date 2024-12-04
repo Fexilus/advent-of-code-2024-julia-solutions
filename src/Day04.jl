@@ -23,7 +23,7 @@ function star1(input=stdin)
     matrix = parse_input(input)
 
     c = 0
-    for transformed_matrix in [matrix, rotl90(matrix), rot180(matrix), rotr90(matrix)]
+    for transformed_matrix in [matrix, map(t -> rotl90(matrix, t), 1:3)...]
         for i in eachindex(IndexCartesian(), transformed_matrix)
             k, l = Tuple(i)
             if transformed_matrix[k, l] == 'X'
@@ -75,7 +75,7 @@ function star2(input=stdin)
     matrix = parse_input(input)
 
     c = 0
-    for transformed_matrix in [matrix, rotl90(matrix), rot180(matrix), rotr90(matrix)]
+    for transformed_matrix in [matrix, map(t -> rotl90(matrix, t), 1:3)...]
         for i in eachindex(IndexCartesian(), transformed_matrix)
             k, l = Tuple(i)
             if transformed_matrix[k, l] == 'M'
