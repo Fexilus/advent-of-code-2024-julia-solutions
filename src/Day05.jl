@@ -110,31 +110,21 @@ function star2(input=stdin)
     s = 0
     for update in updates
         @debug "Update" update
-        prev_numbers = Int[]
+        sorted_update = Int[]
 
         valid_update = true
         for val in update
-            if isdisjoint(prev_numbers, get(rules, val, []))
-                push!(prev_numbers, val)
+            if isdisjoint(sorted_update, get(rules, val, []))
+                push!(sorted_update, val)
             else
                 valid_update = false
-                break
+
+                pos = findfirst(e -> e ∈ rules[val], sorted_update)
+                insert!(sorted_update, pos, val)
             end
         end
 
         if !valid_update
-            sorted_update = Int[]
-
-            for val in update
-                if isdisjoint(sorted_update, get(rules, val, []))
-                    push!(sorted_update, val)
-                else
-                    pos = findfirst(e -> e ∈ rules[val], sorted_update)
-
-                    insert!(sorted_update, pos, val)
-                end
-            end
-
             @debug "Sorted" sorted_update
 
             s += sorted_update[end ÷ 2 + 1]
