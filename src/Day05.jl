@@ -119,7 +119,7 @@ function star2(input=stdin)
             else
                 valid_update = false
 
-                pos = findfirst(e -> e ∈ rules[val], sorted_update)
+                pos = findfirst(∈(rules[val]), sorted_update)
                 insert!(sorted_update, pos, val)
             end
         end
