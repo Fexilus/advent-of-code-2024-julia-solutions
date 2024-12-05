@@ -100,19 +100,53 @@ hint1 = """
 
 function test_hints_star1()
     @testset "Star 1 hints" begin
-        #@test star1(IOBuffer(hint1)) ==
+        @test star1(IOBuffer(hint1)) == 143
     end
 end
 
 function star2(input=stdin)
-end
+    rules, updates = parse_input(input)
 
-hint2 = """
-    """
+    s = 0
+    for update in updates
+        @debug "Update" update
+        prev_numbers = Int[]
+
+        valid_update = true
+        for val in update
+            if isdisjoint(prev_numbers, get(rules, val, []))
+                push!(prev_numbers, val)
+            else
+                valid_update = false
+                break
+            end
+        end
+
+        if !valid_update
+            sorted_update = Int[]
+
+            for val in update
+                if isdisjoint(sorted_update, get(rules, val, []))
+                    push!(sorted_update, val)
+                else
+                    pos = findfirst(e -> e ∈ rules[val], sorted_update)
+
+                    insert!(sorted_update, pos, val)
+                end
+            end
+
+            @debug "Sorted" sorted_update
+
+            s += sorted_update[end ÷ 2 + 1]
+        end
+    end
+
+    return s
+end
 
 function test_hints_star2()
     @testset "Star 2 hints" begin
-        #@test star2(IOBuffer(hint2)) ==
+        @test star2(IOBuffer(hint1)) == 123
     end
 end
 
