@@ -16,15 +16,113 @@ input_file = joinpath(DATA_DIR, "day06.input")
 ans1_file = joinpath(DATA_DIR, "day06.ans1")
 ans2_file = joinpath(DATA_DIR, "day06.ans2")
 
+function parse_input(input)
+    raw_matrix = stack(readlines(input); dims=1)
+
+    puzzle_map = raw_matrix .== '#'
+
+    starting_pos = findfirst(∈("^"), raw_matrix)
+    starting_dir = :up
+
+    return puzzle_map, starting_pos, starting_dir
+end
+
 function star1(input=stdin)
+    puzzle_map, cur_pos, cur_dir = parse_input(input)
+
+    visited = zero(puzzle_map)
+
+    while !isnothing(cur_pos)
+        @debug "At" cur_pos, cur_dir
+
+        if cur_dir === :up
+            next_ind = findprev(selectdim(puzzle_map, 2, cur_pos[2]), cur_pos[1])
+
+            if isnothing(next_ind) 
+                next_pos = nothing
+                virt_pos = CartesianIndex(1, cur_pos[2])
+
+                visited[virt_pos:cur_pos] .= true
+            else
+                next_pos = CartesianIndex(next_ind + 1, cur_pos[2])
+
+                visited[next_pos:cur_pos] .= true
+            end
+
+            cur_pos = next_pos
+            cur_dir = :right
+        elseif cur_dir === :right
+            next_ind = findnext(selectdim(puzzle_map, 1, cur_pos[1]), cur_pos[2])
+
+            if isnothing(next_ind) 
+                next_pos = nothing
+                virt_pos = CartesianIndex(cur_pos[1], size(puzzle_map, 2))
+
+                visited[cur_pos:virt_pos] .= true
+            else
+                next_pos = CartesianIndex(cur_pos[1], next_ind - 1)
+
+                visited[cur_pos:next_pos] .= true
+            end
+
+            cur_pos = next_pos
+            cur_dir = :down
+        elseif cur_dir === :down
+            next_ind = findnext(selectdim(puzzle_map, 2, cur_pos[2]), cur_pos[1])
+
+            if isnothing(next_ind) 
+                next_pos = nothing
+                virt_pos = CartesianIndex(size(puzzle_map, 1), cur_pos[2])
+
+                visited[cur_pos:virt_pos] .= true
+            else
+                next_pos = CartesianIndex(next_ind - 1, cur_pos[2])
+
+                visited[cur_pos:next_pos] .= true
+            end
+
+            cur_pos = next_pos
+            cur_dir = :left
+        elseif cur_dir === :left
+            next_ind = findprev(selectdim(puzzle_map, 1, cur_pos[1]), cur_pos[2])
+
+            if isnothing(next_ind) 
+                next_pos = nothing
+                virt_pos = CartesianIndex(cur_pos[1], 1)
+
+                visited[virt_pos:cur_pos] .= true
+            else
+                next_pos = CartesianIndex(cur_pos[1], next_ind + 1)
+
+                visited[next_pos:cur_pos] .= true
+            end
+
+            cur_pos = next_pos
+            cur_dir = :up
+        end
+    end
+
+    #@debug "Location visited" visited
+
+    return count(visited)
 end
 
 hint1 = """
+    ....#.....
+    .........#
+    ..........
+    ..#.......
+    .......#..
+    ..........
+    .#..^.....
+    ........#.
+    #.........
+    ......#...
     """
 
 function test_hints_star1()
     @testset "Star 1 hints" begin
-        #@test star1(IOBuffer(hint1)) ==
+        @test star1(IOBuffer(hint1)) == 41
     end
 end
 
