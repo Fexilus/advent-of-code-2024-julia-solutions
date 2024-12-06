@@ -37,6 +37,7 @@ function get_visited_locations(puzzle_map, cur_pos, cur_dir)
         @debug "At" cur_pos, cur_dir
 
         if (cur_pos, cur_dir) ∈ visited_state
+            @debug "Infinite loop, exiting"
             inf_loop = true
             break
         else
@@ -109,6 +110,8 @@ function get_visited_locations(puzzle_map, cur_pos, cur_dir)
             cur_dir = :up
         end
     end
+
+    @debug "Done"
 
     return visited, inf_loop
 end
