@@ -27,13 +27,21 @@ function parse_input(input)
     return puzzle_map, starting_pos, starting_dir
 end
 
-function star1(input=stdin)
-    puzzle_map, cur_pos, cur_dir = parse_input(input)
-
+function get_visited_locations(puzzle_map, cur_pos, cur_dir)
     visited = zero(puzzle_map)
+    visited_state = Set{Tuple{CartesianIndex, Symbol}}()
+
+    inf_loop = false
 
     while !isnothing(cur_pos)
         @debug "At" cur_pos, cur_dir
+
+        if (cur_pos, cur_dir) ∈ visited_state
+            inf_loop = true
+            break
+        else
+            push!(visited_state, (cur_pos, cur_dir))
+        end
 
         if cur_dir === :up
             next_ind = findprev(selectdim(puzzle_map, 2, cur_pos[2]), cur_pos[1])
@@ -102,7 +110,13 @@ function star1(input=stdin)
         end
     end
 
-    #@debug "Location visited" visited
+    return visited, inf_loop
+end
+
+function star1(input=stdin)
+    puzzle_map, cur_pos, cur_dir = parse_input(input)
+
+    visited, _ = get_visited_locations(puzzle_map, cur_pos, cur_dir)
 
     return count(visited)
 end
@@ -127,14 +141,22 @@ function test_hints_star1()
 end
 
 function star2(input=stdin)
-end
+    puzzle_map, cur_pos, cur_dir = parse_input(input)
 
-hint2 = """
-    """
+    visited, _ = get_visited_locations(puzzle_map, cur_pos, cur_dir)
+
+    return count(findall(visited)) do visited_loc
+        mod_puzzle_map = copy(puzzle_map)
+        mod_puzzle_map[visited_loc] = true
+
+        _, inf_loop = get_visited_locations(mod_puzzle_map, cur_pos, cur_dir)
+        return inf_loop
+    end
+end
 
 function test_hints_star2()
     @testset "Star 2 hints" begin
-        #@test star2(IOBuffer(hint2)) ==
+        @test star2(IOBuffer(hint1)) == 6
     end
 end
 
