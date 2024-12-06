@@ -50,13 +50,11 @@ function get_visited_locations(puzzle_map, cur_pos, cur_dir)
             if isnothing(next_ind) 
                 next_pos = nothing
                 virt_pos = CartesianIndex(1, cur_pos[2])
-
-                visited[virt_pos:cur_pos] .= true
             else
-                next_pos = CartesianIndex(next_ind + 1, cur_pos[2])
-
-                visited[next_pos:cur_pos] .= true
+                next_pos = virt_pos = CartesianIndex(next_ind + 1, cur_pos[2])
             end
+
+            visited[virt_pos:cur_pos] .= true
 
             cur_pos = next_pos
             cur_dir = :right
@@ -66,13 +64,11 @@ function get_visited_locations(puzzle_map, cur_pos, cur_dir)
             if isnothing(next_ind) 
                 next_pos = nothing
                 virt_pos = CartesianIndex(cur_pos[1], size(puzzle_map, 2))
-
-                visited[cur_pos:virt_pos] .= true
             else
-                next_pos = CartesianIndex(cur_pos[1], next_ind - 1)
-
-                visited[cur_pos:next_pos] .= true
+                next_pos = virt_pos = CartesianIndex(cur_pos[1], next_ind - 1)
             end
+
+            visited[cur_pos:virt_pos] .= true
 
             cur_pos = next_pos
             cur_dir = :down
@@ -82,13 +78,11 @@ function get_visited_locations(puzzle_map, cur_pos, cur_dir)
             if isnothing(next_ind) 
                 next_pos = nothing
                 virt_pos = CartesianIndex(size(puzzle_map, 1), cur_pos[2])
-
-                visited[cur_pos:virt_pos] .= true
             else
-                next_pos = CartesianIndex(next_ind - 1, cur_pos[2])
-
-                visited[cur_pos:next_pos] .= true
+                next_pos = virt_pos = CartesianIndex(next_ind - 1, cur_pos[2])
             end
+
+            visited[cur_pos:virt_pos] .= true
 
             cur_pos = next_pos
             cur_dir = :left
@@ -98,13 +92,11 @@ function get_visited_locations(puzzle_map, cur_pos, cur_dir)
             if isnothing(next_ind) 
                 next_pos = nothing
                 virt_pos = CartesianIndex(cur_pos[1], 1)
-
-                visited[virt_pos:cur_pos] .= true
             else
-                next_pos = CartesianIndex(cur_pos[1], next_ind + 1)
-
-                visited[next_pos:cur_pos] .= true
+                next_pos = virt_pos = CartesianIndex(cur_pos[1], next_ind + 1)
             end
+                
+            visited[virt_pos:cur_pos] .= true
 
             cur_pos = next_pos
             cur_dir = :up
