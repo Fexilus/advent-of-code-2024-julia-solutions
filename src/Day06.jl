@@ -117,9 +117,9 @@ function get_visited_locations(puzzle_map, cur_pos, cur_dir)
 end
 
 function star1(input=stdin)
-    puzzle_map, cur_pos, cur_dir = parse_input(input)
+    puzzle_map, init_pos, init_dir = parse_input(input)
 
-    visited, _ = get_visited_locations(puzzle_map, cur_pos, cur_dir)
+    visited, _ = get_visited_locations(puzzle_map, init_pos, init_dir)
 
     return count(visited)
 end
@@ -144,15 +144,15 @@ function test_hints_star1()
 end
 
 function star2(input=stdin)
-    puzzle_map, cur_pos, cur_dir = parse_input(input)
+    puzzle_map, init_pos, init_dir = parse_input(input)
 
-    visited, _ = get_visited_locations(puzzle_map, cur_pos, cur_dir)
+    visited, _ = get_visited_locations(puzzle_map, init_pos, init_dir)
 
     return count(findall(visited)) do visited_loc
         mod_puzzle_map = copy(puzzle_map)
         mod_puzzle_map[visited_loc] = true
 
-        _, inf_loop = get_visited_locations(mod_puzzle_map, cur_pos, cur_dir)
+        _, inf_loop = get_visited_locations(mod_puzzle_map, init_pos, init_dir)
         return inf_loop
     end
 end
