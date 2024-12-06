@@ -148,11 +148,15 @@ function star2(input=stdin)
 
     visited, _ = get_visited_locations(puzzle_map, init_pos, init_dir)
 
+    mod_puzzle_map = copy(puzzle_map)
+
     return count(findall(visited)) do visited_loc
-        mod_puzzle_map = copy(puzzle_map)
         mod_puzzle_map[visited_loc] = true
 
         _, inf_loop = get_visited_locations(mod_puzzle_map, init_pos, init_dir)
+
+        mod_puzzle_map[visited_loc] = false
+
         return inf_loop
     end
 end
