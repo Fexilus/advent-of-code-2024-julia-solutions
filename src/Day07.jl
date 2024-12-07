@@ -31,10 +31,16 @@ function can_get_tot(goal, first_val, further_vals; allow_concat=true)
         return goal == first_val
     end
 
-    possible_mult = can_get_tot(goal, first_val * further_vals[1], @view further_vals[2:end]; allow_concat)
-    possible_add = can_get_tot(goal, first_val + further_vals[1], @view further_vals[2:end]; allow_concat)
+    possible_mult = can_get_tot(goal,
+                                first_val * further_vals[1],
+                                @view further_vals[2:end]; allow_concat)
+    possible_add = can_get_tot(goal,
+                               first_val + further_vals[1],
+                               @view further_vals[2:end]; allow_concat)
     if allow_concat
-        possible_concat = can_get_tot(goal, concat(first_val, further_vals[1]), @view further_vals[2:end]; allow_concat)
+        possible_concat = can_get_tot(goal,
+                                      concat(first_val, further_vals[1]),
+                                      @view further_vals[2:end]; allow_concat)
     else
         possible_concat = false
     end
@@ -42,8 +48,9 @@ function can_get_tot(goal, first_val, further_vals; allow_concat=true)
     return possible_mult || possible_add || possible_concat
 end
 
-can_get_tot(goal, vals; kwargs...) = can_get_tot(goal, vals[1], @view vals[2:end]; kwargs...)
-
+function can_get_tot(goal, vals; kwargs...)
+    return can_get_tot(goal, vals[1], @view vals[2:end]; kwargs...)
+end
 
 function star1(input=stdin)
     return sum(eachline(input)) do line
