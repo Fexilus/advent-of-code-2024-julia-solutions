@@ -24,18 +24,25 @@ function parse_line(line)
     return total, numbers
 end
 
-function can_get_tot(goal, first_val, further_vals)
+concat(a, b) = a * 10^ndigits(b) + b
+
+function can_get_tot(goal, first_val, further_vals; allow_concat=true)
     if isempty(further_vals)
         return goal == first_val
     end
 
-    possible_mult = can_get_tot(goal, first_val * further_vals[1], @view further_vals[2:end])
-    possible_add = can_get_tot(goal, first_val + further_vals[1], @view further_vals[2:end])
+    possible_mult = can_get_tot(goal, first_val * further_vals[1], @view further_vals[2:end]; allow_concat)
+    possible_add = can_get_tot(goal, first_val + further_vals[1], @view further_vals[2:end]; allow_concat)
+    if allow_concat
+        possible_concat = can_get_tot(goal, concat(first_val, further_vals[1]), @view further_vals[2:end]; allow_concat)
+    else
+        possible_concat = false
+    end
 
-    return possible_mult || possible_add
+    return possible_mult || possible_add || possible_concat
 end
 
-can_get_tot(goal, vals) = can_get_tot(goal, vals[1], @view vals[2:end])
+can_get_tot(goal, vals; kwargs...) = can_get_tot(goal, vals[1], @view vals[2:end]; kwargs...)
 
 
 function star1(input=stdin)
@@ -43,7 +50,7 @@ function star1(input=stdin)
         goal, values = parse_line(line)
         @debug "With" goal, values
 
-        if can_get_tot(goal, values)
+        if can_get_tot(goal, values; allow_concat=false)
             return goal
         else
             return 0
@@ -70,14 +77,21 @@ function test_hints_star1()
 end
 
 function star2(input=stdin)
-end
+    return sum(eachline(input)) do line
+        goal, values = parse_line(line)
+        @debug "With" goal, values
 
-hint2 = """
-    """
+        if can_get_tot(goal, values)
+            return goal
+        else
+            return 0
+        end
+    end
+end
 
 function test_hints_star2()
     @testset "Star 2 hints" begin
-        #@test star2(IOBuffer(hint2)) ==
+        @test star2(IOBuffer(hint1)) == 11387
     end
 end
 
