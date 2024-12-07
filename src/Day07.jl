@@ -29,6 +29,8 @@ concat(a, b) = a * 10^ndigits(b) + b
 function can_get_tot(goal, first_val, further_vals; allow_concat=true)
     if isempty(further_vals)
         return goal == first_val
+    elseif first_val > goal
+        return false
     end
 
     possible_mult = can_get_tot(goal,
