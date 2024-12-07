@@ -17,7 +17,7 @@ ans1_file = joinpath(DATA_DIR, "day07.ans1")
 ans2_file = joinpath(DATA_DIR, "day07.ans2")
 
 function parse_line(line)
-    full_match = match(r"(\d+):\s*((?:\d+\s*)*)", line)
+    full_match = match(r"(\d+):(.*)$", line)
     total = parse(Int, full_match.captures[1])
     numbers = parse.(Int, split(full_match.captures[2]))
 
