@@ -26,28 +26,26 @@ end
 
 concat(a, b) = a * 10^ndigits(b) + b
 
-function can_get_tot(goal, first_val, further_vals; allow_concat=true)
-    if isempty(further_vals)
+function can_get_tot(goal, first_val, rest_vals; allow_concat=true)
+    if isempty(rest_vals)
         return goal == first_val
     elseif first_val > goal
         return false
     end
 
-    possible_mult = can_get_tot(goal,
-                                first_val * further_vals[1],
-                                @view further_vals[2:end]; allow_concat)
-    possible_add = can_get_tot(goal,
-                               first_val + further_vals[1],
-                               @view further_vals[2:end]; allow_concat)
-    if allow_concat
-        possible_concat = can_get_tot(goal,
-                                      concat(first_val, further_vals[1]),
-                                      @view further_vals[2:end]; allow_concat)
-    else
-        possible_concat = false
-    end
+    next_val = rest_vals[1]
+    further_vals = @view rest_vals[2:end]
 
-    return possible_mult || possible_add || possible_concat
+    if can_get_tot(goal, first_val * next_val, further_vals; allow_concat)
+        return true
+    elseif can_get_tot(goal, first_val + next_val, further_vals; allow_concat)
+        return true
+    elseif (allow_concat
+            && can_get_tot(goal, concat(first_val, next_val), further_vals; allow_concat))
+        return true
+    else
+        return false
+    end
 end
 
 function can_get_tot(goal, vals; kwargs...)
