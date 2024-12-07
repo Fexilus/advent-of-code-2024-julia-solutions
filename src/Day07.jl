@@ -48,7 +48,6 @@ can_get_tot(goal, vals; kwargs...) = can_get_tot(goal, vals[1], @view vals[2:end
 function star1(input=stdin)
     return sum(eachline(input)) do line
         goal, values = parse_line(line)
-        @debug "With" goal, values
 
         if can_get_tot(goal, values; allow_concat=false)
             return goal
@@ -79,7 +78,6 @@ end
 function star2(input=stdin)
     return sum(eachline(input)) do line
         goal, values = parse_line(line)
-        @debug "With" goal, values
 
         if can_get_tot(goal, values)
             return goal
