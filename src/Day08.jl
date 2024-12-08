@@ -43,7 +43,7 @@ function star1(input=stdin)
     bounds = CartesianIndices((height, width))
 
     for (c, locations) in antenna_locations
-        @debug "Solving antennas" c
+        @info "Solving antennas $c"
         for loc1 in locations
             for loc2 in locations
                 if loc1 === loc2
@@ -53,6 +53,8 @@ function star1(input=stdin)
                 potential_anti_loc = 2 * loc1 - loc2
 
                 if potential_anti_loc ∈ bounds
+                    @debug "Valid antinode pos" potential_anti_loc
+
                     push!(anti_locations, potential_anti_loc)
                 end
             end
@@ -90,7 +92,7 @@ function star2(input=stdin)
     bounds = CartesianIndices((height, width))
 
     for (c, locations) in antenna_locations
-        @debug "Solving antennas $c"
+        @info "Solving antennas $c"
         for loc1 in locations
             for loc2 in locations
                 if loc1 === loc2
@@ -101,6 +103,8 @@ function star2(input=stdin)
 
                 pos_steps = 0
                 while (loc1 + pos_steps * loc_diff) ∈ bounds
+                    @debug "Valid antinode pos" loc1 + pos_steps * loc_diff
+
                     push!(anti_locations, loc1 + pos_steps * loc_diff)
 
                     pos_steps += 1
