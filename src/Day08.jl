@@ -84,6 +84,32 @@ function test_hints_star1()
 end
 
 function star2(input=stdin)
+    (height, width), antenna_locations = parse_input(input)
+    anti_locations = Set{CartesianIndex}()
+
+    bounds = CartesianIndices((height, width))
+
+    for (c, locations) in antenna_locations
+        @debug "Solving antennas $c"
+        for loc1 in locations
+            for loc2 in locations
+                if loc1 === loc2
+                    continue
+                end
+
+                loc_diff = loc1 - loc2
+
+                pos_steps = 0
+                while (loc1 + pos_steps * loc_diff) ∈ bounds
+                    push!(anti_locations, loc1 + pos_steps * loc_diff)
+
+                    pos_steps += 1
+                end
+            end
+        end
+    end
+
+    return length(anti_locations)
 end
 
 function test_hints_star2()
