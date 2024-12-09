@@ -101,6 +101,7 @@ function star2(input=stdin)
     space_positions = positions[2:2:end]
 
     spaces = collect(zip(space_sizes, space_positions))
+    push!(spaces, (typemax(Int), positions[end]))
 
     moved_blocks = Set()
 
@@ -109,7 +110,7 @@ function star2(input=stdin)
         if block in moved_blocks
             @debug "Skipping" block
         else
-            @info "Forward block" block
+            @debug "Forward block" block
 
             (block_id, block_size, block_pos) = block
 
@@ -121,16 +122,16 @@ function star2(input=stdin)
         (space_size, space_pos) = space
 
         for tail_block in reverse(blocks)
-            if tail_block in moved_blocks
-                continue
-            elseif tail_block == block
+            if tail_block == block
                 break
+            elseif tail_block in moved_blocks
+                continue
             end
 
             (block_id, block_size, _) = tail_block
 
             if block_size ≤ space_size
-                @info "Moving block" tail_block
+                @debug "Moving block" tail_block
 
                 push!(moved_blocks, tail_block)
 
