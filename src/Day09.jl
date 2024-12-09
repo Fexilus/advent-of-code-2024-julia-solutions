@@ -86,14 +86,70 @@ function test_hints_star1()
 end
 
 function star2(input=stdin)
-end
+    line = readline(input)
 
-hint2 = """
-    """
+    sizes = parse.(Int, c for c in line)
+    positions = insert!(cumsum(sizes), 1, 0)
+
+    ids = 0:((length(line) + 1) ÷ 2)
+    block_sizes = sizes[1:2:end]
+    block_positions = positions[1:2:end]
+
+    blocks = collect(zip(ids, block_sizes, block_positions))
+
+    space_sizes = sizes[2:2:end]
+    space_positions = positions[2:2:end]
+
+    spaces = collect(zip(space_sizes, space_positions))
+
+    moved_blocks = Set()
+
+    s = 0
+    for (block, space) in zip(blocks, spaces)
+        if block in moved_blocks
+            @debug "Skipping" block
+        else
+            @info "Forward block" block
+
+            (block_id, block_size, block_pos) = block
+
+            for pos in block_pos:(block_pos + block_size - 1)
+                s += pos * block_id
+            end
+        end
+
+        (space_size, space_pos) = space
+
+        for tail_block in reverse(blocks)
+            if tail_block in moved_blocks
+                continue
+            elseif tail_block == block
+                break
+            end
+
+            (block_id, block_size, _) = tail_block
+
+            if block_size ≤ space_size
+                @info "Moving block" tail_block
+
+                push!(moved_blocks, tail_block)
+
+                for pos in space_pos:(space_pos + block_size - 1)
+                    s += pos * block_id
+                end
+
+                space_size -= block_size
+                space_pos += block_size
+            end
+        end
+    end
+
+    return s
+end
 
 function test_hints_star2()
     @testset "Star 2 hints" begin
-        #@test star2(IOBuffer(hint2)) ==
+        @test star2(IOBuffer(hint1)) == 2858
     end
 end
 
