@@ -18,7 +18,7 @@ ans2_file = joinpath(DATA_DIR, "day10.ans2")
 
 function parse_input(input)
     return stack(eachline(input); dims=1) do line
-        return collect(parse(Int, c) for c in line)
+        return [parse(Int, c) for c in line]
     end
 end
 
@@ -31,7 +31,7 @@ function get_neighbor_indices(matrix, index)
     return filter(i -> checkbounds(Bool, matrix, i), neighbors)
 end
 
-function find_peaks!(reachable_peaks, topo_map, index)
+function mark_peaks!(reachable_peaks, topo_map, index)
     val = topo_map[index]
 
     if val == 9
@@ -39,7 +39,7 @@ function find_peaks!(reachable_peaks, topo_map, index)
     else
         for neighbor_index in get_neighbor_indices(topo_map, index)
             if topo_map[neighbor_index] == val + 1
-                find_peaks!(reachable_peaks, topo_map, neighbor_index)
+                mark_peaks!(reachable_peaks, topo_map, neighbor_index)
             end
         end
     end
@@ -50,7 +50,7 @@ function star1(input=stdin)
 
     return sum(findall(==(0), topo_map)) do index
         reachable_peaks = Set{CartesianIndex}()
-        find_peaks!(reachable_peaks, topo_map, index)
+        mark_peaks!(reachable_peaks, topo_map, index)
 
         return length(reachable_peaks)
     end
@@ -93,7 +93,7 @@ end
 function star2(input=stdin)
     topo_map = parse_input(input)
 
-    return sum(eachindex(IndexCartesian(), topo_map)) do index
+    return sum(findall(==(0), topo_map)) do index
         if topo_map[index] == 0
             return score_index(topo_map, index)
         else
