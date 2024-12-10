@@ -1,4 +1,5 @@
 using Test
+using Logging
 
 using AdventOfCode2024
 
@@ -32,22 +33,24 @@ day_modules = [
 
 module_name(Mod) = last(rsplit(repr("text/plain", Mod), "."; limit=2))
 
-@testset "AdventOfCode2024" begin
-    @testset "$(module_name(DayModule))" for DayModule in day_modules
-        DayModule.test_hints_star1()
-        DayModule.test_hints_star2()
+with_logger(ConsoleLogger(Logging.Warn)) do
+    @testset "AdventOfCode2024" begin
+        @testset "$(module_name(DayModule))" for DayModule in day_modules
+            DayModule.test_hints_star1()
+            DayModule.test_hints_star2()
 
-        @testset "Solutions" begin
-            if ispath(DayModule.input_file) && ispath(DayModule.ans1_file)
-                @test DayModule.star1(DayModule.input_file) == parse(Int, readline(DayModule.ans1_file))
-            else
-                @test_skip DayModule.star1(DayModule.input_file) == parse(Int, readline(DayModule.ans1_file))
-            end
+            @testset "Solutions" begin
+                if ispath(DayModule.input_file) && ispath(DayModule.ans1_file)
+                    @test DayModule.star1(DayModule.input_file) == parse(Int, readline(DayModule.ans1_file))
+                else
+                    @test_skip DayModule.star1(DayModule.input_file) == parse(Int, readline(DayModule.ans1_file))
+                end
 
-            if ispath(DayModule.input_file) && ispath(DayModule.ans2_file)
-                @test DayModule.star2(DayModule.input_file) == parse(Int, readline(DayModule.ans2_file))
-            else
-                @test_skip DayModule.star2(DayModule.input_file) == parse(Int, readline(DayModule.ans2_file))
+                if ispath(DayModule.input_file) && ispath(DayModule.ans2_file)
+                    @test DayModule.star2(DayModule.input_file) == parse(Int, readline(DayModule.ans2_file))
+                else
+                    @test_skip DayModule.star2(DayModule.input_file) == parse(Int, readline(DayModule.ans2_file))
+                end
             end
         end
     end
