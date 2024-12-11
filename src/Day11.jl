@@ -20,10 +20,10 @@ ans2_file = joinpath(DATA_DIR, "day11.ans2")
 
 parse_input(input) = parse.(Int, split(readline(input)))
 
-function star1(input=stdin)
+function star1(input=stdin; blinks=25)
     stones = parse_input(input)
 
-    for i in 1:25
+    for i in 1:blinks
         new_stones = Int[]
 
         for stone in stones
@@ -39,17 +39,21 @@ function star1(input=stdin)
         end
 
         stones = new_stones
+
+        @debug "New state" stones
     end
     
     return length(stones)
 end
 
-hint1 = """
-    """
+hint1 = "0 1 10 99 999"
+hint2 = "125 17"
 
 function test_hints_star1()
     @testset "Star 1 hints" begin
-        #@test star1(IOBuffer(hint1)) ==
+        @test star1(IOBuffer(hint1); blinks=1) == 7
+        @test star1(IOBuffer(hint2); blinks=6) == 22
+        @test star1(IOBuffer(hint2); blinks=25) == 55312
     end
 end
 
@@ -75,12 +79,8 @@ function star2(input=stdin)
     end
 end
 
-hint2 = """
-    """
-
 function test_hints_star2()
     @testset "Star 2 hints" begin
-        #@test star2(IOBuffer(hint2)) ==
     end
 end
 
