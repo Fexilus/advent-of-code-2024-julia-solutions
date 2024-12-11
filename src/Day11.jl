@@ -16,7 +16,30 @@ input_file = joinpath(DATA_DIR, "day11.input")
 ans1_file = joinpath(DATA_DIR, "day11.ans1")
 ans2_file = joinpath(DATA_DIR, "day11.ans2")
 
+parse_input(input) = parse.(Int, split(readline(input)))
+
 function star1(input=stdin)
+    stones = parse_input(input)
+
+    for i in 1:25
+        new_stones = Int[]
+
+        for stone in stones
+            if stone == 0
+                push!(new_stones, 1)
+            elseif iseven(ndigits(stone))
+                upper, lower = divrem(stone, 10^(ndigits(stone) ÷ 2))
+                push!(new_stones, upper)
+                push!(new_stones, lower)
+            else
+                push!(new_stones, stone * 2024)
+            end
+        end
+
+        stones = new_stones
+    end
+    
+    return length(stones)
 end
 
 hint1 = """
