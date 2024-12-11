@@ -2,7 +2,7 @@ module Day11
 
 using Test
 
-using Memoization: @memoize
+using Memoization
 
 using ..Utils: DATA_DIR
 
