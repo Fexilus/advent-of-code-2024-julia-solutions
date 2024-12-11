@@ -20,44 +20,6 @@ ans2_file = joinpath(DATA_DIR, "day11.ans2")
 
 parse_input(input) = parse.(Int, split(readline(input)))
 
-function star1(input=stdin; blinks=25)
-    stones = parse_input(input)
-
-    for i in 1:blinks
-        new_stones = Int[]
-
-        for stone in stones
-            if stone == 0
-                push!(new_stones, 1)
-            elseif iseven(ndigits(stone))
-                upper, lower = divrem(stone, 10^(ndigits(stone) ÷ 2))
-                push!(new_stones, upper)
-                push!(new_stones, lower)
-            else
-                push!(new_stones, stone * 2024)
-            end
-        end
-
-        stones = new_stones
-
-        @debug "New state" stones
-    end
-    
-    return length(stones)
-end
-
-hint1 = "0 1 10 99 999"
-hint2 = "125 17"
-
-function test_hints_star1()
-    @testset "Star 1 hints" begin
-        @test star1(IOBuffer(hint1); blinks=1) == 7
-        @test star1(IOBuffer(hint2); blinks=6) == 22
-        @test star1(IOBuffer(hint2); blinks=25) == 55312
-    end
-end
-
-
 @memoize function stone_decendants(stone, steps)
     if steps == 0
         return 1
@@ -68,6 +30,25 @@ end
         return stone_decendants(upper, steps - 1) + stone_decendants(lower, steps - 1)
     else
         return stone_decendants(stone * 2024, steps - 1)
+    end
+end
+
+function star1(input=stdin; blinks=25)
+    stones = parse_input(input)
+
+    return sum(stones) do stone
+        return stone_decendants(stone, blinks)
+    end
+end
+
+hint1 = "0 1 10 99 999"
+hint2 = "125 17"
+
+function test_hints_star1()
+    @testset "Star 1 hints" begin
+        @test star1(IOBuffer(hint1); blinks=1) == 7
+        @test star1(IOBuffer(hint2); blinks=6) == 22
+        @test star1(IOBuffer(hint2); blinks=25) == 55312
     end
 end
 
