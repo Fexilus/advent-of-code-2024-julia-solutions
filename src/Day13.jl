@@ -90,12 +90,10 @@ function star2(input=stdin)
     end
 end
 
-hint2 = """
-    """
-
 function test_hints_star2()
     @testset "Star 2 hints" begin
-        #@test star2(IOBuffer(hint2)) ==
+        costs = [machine_cost(spec...) for spec in parse_input(IOBuffer(hint1))]
+        @test findall(>(0), costs) == [2, 4]
     end
 end
 
