@@ -103,11 +103,12 @@ function star2(input=stdin; map_size=[101, 103])
         xs = map(first, cur_positions)
         ys = map(last, cur_positions)
 
-        @info "Step" steps
         show(scatterplot(xs, ys;
                          xlim=(0, map_size[1] - 1),
                          ylim=(0, map_size[2] - 1),
-                         yflip=true))
+                         yflip=true,
+                         title=string(steps)))
+        println()
     end
 end
 
