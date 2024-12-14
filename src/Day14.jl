@@ -2,6 +2,8 @@ module Day14
 
 using Test
 
+using UnicodePlots: scatterplot
+
 using ..Utils: DATA_DIR
 
 export input_file
@@ -78,15 +80,39 @@ function test_hints_star1()
     end
 end
 
-function star2(input=stdin)
-end
+function star2(input=stdin; map_size=[101, 103])
+    robots = map(parse_robot, eachline(input))
 
-hint2 = """
-    """
+    cur_positions = map(first, robots)
+    vels = map(last, robots)
+
+    step_size = 1
+
+    steps = 0
+    while (line = readline(stdin)) != "q"
+        if line != ""
+            step_size = parse(Int, line)
+        end
+
+        steps += step_size
+
+        for (i, (pos, vel)) in enumerate(zip(cur_positions, vels))
+            cur_positions[i] = mod.(pos + step_size * vel, map_size)
+        end
+
+        xs = map(first, cur_positions)
+        ys = map(last, cur_positions)
+
+        @info "Step" steps
+        show(scatterplot(xs, ys;
+                         xlim=(0, map_size[1] - 1),
+                         ylim=(0, map_size[2] - 1),
+                         yflip=true))
+    end
+end
 
 function test_hints_star2()
     @testset "Star 2 hints" begin
-        #@test star2(IOBuffer(hint2)) ==
     end
 end
 
