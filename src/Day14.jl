@@ -80,11 +80,25 @@ function test_hints_star1()
     end
 end
 
+function plot_robot_positions(positions, map_size, steps)
+    xs = map(first, positions)
+    ys = map(last, positions)
+
+    show(scatterplot(xs, ys;
+                     xlim=(0, map_size[1] - 1),
+                     ylim=(0, map_size[2] - 1),
+                     yflip=true,
+                     title=string(steps)))
+end
+
 function star2(input=stdin; map_size=[101, 103])
     robots = map(parse_robot, eachline(input))
 
     cur_positions = map(first, robots)
     vels = map(last, robots)
+
+    plot_robot_positions(cur_positions, map_size, 0)
+    println()
 
     step_size = 1
 
@@ -100,16 +114,11 @@ function star2(input=stdin; map_size=[101, 103])
             cur_positions[i] = mod.(pos + step_size * vel, map_size)
         end
 
-        xs = map(first, cur_positions)
-        ys = map(last, cur_positions)
-
-        show(scatterplot(xs, ys;
-                         xlim=(0, map_size[1] - 1),
-                         ylim=(0, map_size[2] - 1),
-                         yflip=true,
-                         title=string(steps)))
+        plot_robot_positions(cur_positions, map_size, steps)
         println()
     end
+
+    return steps
 end
 
 function test_hints_star2()
