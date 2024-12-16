@@ -48,7 +48,7 @@ function star1(input=stdin)
     while !isempty(unexplored)
         (pos, dir), score = dequeue_pair!(unexplored)
 
-        @info "At" pos
+        @debug "At" pos
 
         if pos == exit
             return score
@@ -82,10 +82,7 @@ function star1(input=stdin)
             if state ∉ visited
                 prev_score = get(unexplored, state, Inf)
                 unexplored[state] = min(score + extra_score, prev_score)
-            else
-                @debug "Skipping" state
             end
-
         end
 
         push!(visited, (pos, dir))
