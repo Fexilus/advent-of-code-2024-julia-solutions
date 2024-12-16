@@ -2,6 +2,8 @@ module Day16
 
 using Test
 
+using DataStructures: PriorityQueue, dequeue_pair!
+
 using ..Utils: DATA_DIR
 
 export input_file
@@ -16,7 +18,78 @@ input_file = joinpath(DATA_DIR, "day16.input")
 ans1_file = joinpath(DATA_DIR, "day16.ans1")
 ans2_file = joinpath(DATA_DIR, "day16.ans2")
 
+function parse_input(input)
+    start = missing
+    exit = missing
+
+    walls = stack(enumerate(eachline(input)); dims=1) do (k, line)
+        if occursin("S", line)
+            start = CartesianIndex(k, findfirst('S', line))
+        end
+
+        if occursin("E", line)
+            exit = CartesianIndex(k, findfirst('E', line))
+        end
+
+        return collect(line) .== '#'
+    end
+
+    return walls, start, exit
+end
+
+State = Tuple{CartesianIndex{2}, Symbol}
+
 function star1(input=stdin)
+    walls, start, exit = parse_input(input)
+
+    visited = Set{State}()
+    unexplored = PriorityQueue((start, :right) => 0)
+
+    while !isempty(unexplored)
+        (pos, dir), score = dequeue_pair!(unexplored)
+
+        @info "At" pos
+
+        if pos == exit
+            return score
+        elseif walls[pos]
+            continue
+        end
+
+        if dir === :up
+            forward_pos = pos + CartesianIndex(-1, 0)
+            clockwise_dir = :right
+            counterclockwise_dir = :left
+        elseif dir === :right
+            forward_pos = pos + CartesianIndex(0, 1)
+            clockwise_dir = :down
+            counterclockwise_dir = :up
+        elseif dir === :down
+            forward_pos = pos + CartesianIndex(1, 0)
+            clockwise_dir = :left
+            counterclockwise_dir = :right
+        elseif dir === :left
+            forward_pos = pos + CartesianIndex(0, -1)
+            clockwise_dir = :up
+            counterclockwise_dir = :down
+        end
+
+        potential_states = [((forward_pos, dir), 1),
+                            ((pos, clockwise_dir), 1000),
+                            ((pos, counterclockwise_dir), 1000)]
+
+        for (state, extra_score) in potential_states
+            if state ∉ visited
+                prev_score = get(unexplored, state, Inf)
+                unexplored[state] = min(score + extra_score, prev_score)
+            else
+                @debug "Skipping" state
+            end
+
+        end
+
+        push!(visited, (pos, dir))
+    end
 end
 
 hint1 = """
