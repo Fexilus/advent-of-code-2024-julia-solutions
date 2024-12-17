@@ -31,8 +31,45 @@ function parse_input(input)
     return reg_A, reg_B, reg_C, instructions
 end
 
+function show_program(instructions)
+    return prod(Iterators.partition(instructions, 2)) do (opcode, operand)
+        if 0 ≤ operand ≤ 3
+            combo_operand = operand
+        elseif operand == 4
+            combo_operand = "A"
+        elseif operand == 5
+            combo_operand = "B"
+        elseif operand == 6
+            combo_operand = "C"
+        else
+            combo_operand = nothing
+        end
+        
+        if opcode == 0
+            return "adv $combo_operand   (A >> $combo_operand  -> A)\n"
+        elseif opcode == 1
+            return "bxl $operand   (B xor $operand -> B)\n"
+        elseif opcode == 2
+            return "bst $combo_operand   ($combo_operand mod 8 -> B)\n"
+        elseif opcode == 3
+            return "jnz $operand   (A != 0: jmp $operand)\n"
+        elseif opcode == 4
+            return "bxc     (B xor C -> B)\n"
+        elseif opcode == 5
+            return "out $combo_operand   ($combo_operand mod 8 -> out)\n"
+        elseif opcode == 6
+            return "bdv $combo_operand   (A >> $combo_operand  -> B)\n"
+        elseif opcode == 7
+            return "cdv $combo_operand   (A >> $combo_operand  -> C)\n"
+        end
+    end
+end
+
 function star1(input=stdin)
     reg_A, reg_B, reg_C, instructions = parse_input(input)
+    
+    @info "Program: \n$(show_program(instructions))"
+
     instruction_pointer = 0
 
     output = Int[]
@@ -124,6 +161,8 @@ end
 
 function star2(input=stdin)
     _, init_reg_B, init_reg_C, instructions = parse_input(input)
+
+    @info "Program: \n$(show_program(instructions))"
 
     function run_to_first_output(init_reg_A)
         instruction_pointer = 0
