@@ -186,52 +186,44 @@ function star2(input=stdin)
             end
 
             if opcode == 0
-                #@debug "adv" operand, combo_operand
-
+                # adv
                 reg_A = reg_A ÷ 2^combo_operand
 
                 instruction_pointer += 2
             elseif opcode == 1
-                #@debug "bxl" operand, combo_operand
-
+                # bxl
                 reg_B = reg_B ⊻ operand
 
                 instruction_pointer += 2
             elseif opcode == 2
-                #@debug "bst" operand, combo_operand
-
+                # bst
                 reg_B = combo_operand % 8
 
                 instruction_pointer += 2
             elseif opcode == 3
-                #@debug "jnz" operand, combo_operand
-
+                # jnz
                 if reg_A == 0
                     instruction_pointer += 2
                 else
                     instruction_pointer = operand
                 end
             elseif opcode == 4
-                #@debug "bxc" operand, combo_operand
-
+                # bxc
                 reg_B = reg_B ⊻ reg_C
 
                 instruction_pointer += 2
             elseif opcode == 5
-                #@debug "out" operand, combo_operand
-
+                # out
                 return combo_operand % 8
 
                 instruction_pointer += 2
             elseif opcode == 6
-                #@debug "bdv" operand, combo_operand
-
+                # bdv
                 reg_B = reg_A ÷ 2^combo_operand
 
                 instruction_pointer += 2
             elseif opcode == 7
                 # cdv
-
                 reg_C = reg_A ÷ 2^combo_operand
 
                 instruction_pointer += 2
@@ -251,7 +243,7 @@ function star2(input=stdin)
                 program_out = run_to_first_output(test_reg_A)
 
                 if program_out == instr
-                    @debug "" bitstring(top_bits), program_out
+                    @debug "A: $(bitstring(top_bits))" program_out
                     push!(new_possible_top_bits, test_reg_A)
                 end
             end
