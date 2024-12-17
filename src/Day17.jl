@@ -123,14 +123,118 @@ function test_hints_star1()
 end
 
 function star2(input=stdin)
+    _, init_reg_B, init_reg_C, instructions = parse_input(input)
+
+    function run_to_first_output(init_reg_A)
+        instruction_pointer = 0
+        reg_A = init_reg_A
+        reg_B = init_reg_B
+        reg_C = init_reg_C
+
+        while instruction_pointer < length(instructions)
+            opcode = instructions[instruction_pointer + 1]
+            operand = instructions[instruction_pointer + 2]
+            if 0 ≤ operand ≤ 3
+                combo_operand = operand
+            elseif operand == 4
+                combo_operand = reg_A
+            elseif operand == 5
+                combo_operand = reg_B
+            elseif operand == 6
+                combo_operand = reg_C
+            else
+                combo_operand = nothing
+            end
+
+            if opcode == 0
+                #@debug "adv" operand, combo_operand
+
+                reg_A = reg_A ÷ 2^combo_operand
+
+                instruction_pointer += 2
+            elseif opcode == 1
+                #@debug "bxl" operand, combo_operand
+
+                reg_B = reg_B ⊻ operand
+
+                instruction_pointer += 2
+            elseif opcode == 2
+                #@debug "bst" operand, combo_operand
+
+                reg_B = combo_operand % 8
+
+                instruction_pointer += 2
+            elseif opcode == 3
+                #@debug "jnz" operand, combo_operand
+
+                if reg_A == 0
+                    instruction_pointer += 2
+                else
+                    instruction_pointer = operand
+                end
+            elseif opcode == 4
+                #@debug "bxc" operand, combo_operand
+
+                reg_B = reg_B ⊻ reg_C
+
+                instruction_pointer += 2
+            elseif opcode == 5
+                #@debug "out" operand, combo_operand
+
+                return combo_operand % 8
+
+                instruction_pointer += 2
+            elseif opcode == 6
+                #@debug "bdv" operand, combo_operand
+
+                reg_B = reg_A ÷ 2^combo_operand
+
+                instruction_pointer += 2
+            elseif opcode == 7
+                # cdv
+
+                reg_C = reg_A ÷ 2^combo_operand
+
+                instruction_pointer += 2
+            end
+        end
+    end
+
+    possible_top_bits = [0]
+
+    for instr in reverse(instructions)
+        new_possible_top_bits = Int[]
+
+        for top_bits in possible_top_bits
+            for new_bits in 0:7
+                test_reg_A = (top_bits << 3) + new_bits
+
+                program_out = run_to_first_output(test_reg_A)
+
+                if program_out == instr
+                    @debug "" bitstring(top_bits), program_out
+                    push!(new_possible_top_bits, test_reg_A)
+                end
+            end
+        end
+
+        possible_top_bits = new_possible_top_bits
+    end
+
+    return first(possible_top_bits)
 end
 
 hint2 = """
+    Register A: 2024
+    Register B: 0
+    Register C: 0
+
+    Program: 0,3,5,4,3,0
     """
 
 function test_hints_star2()
     @testset "Star 2 hints" begin
-        #@test star2(IOBuffer(hint2)) ==
+        @test star2(IOBuffer(hint2)) == 117440
     end
 end
 
