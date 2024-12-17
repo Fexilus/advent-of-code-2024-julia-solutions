@@ -41,15 +41,15 @@ with_logger(ConsoleLogger(Logging.Warn)) do
 
             @testset "Solutions" begin
                 if ispath(DayModule.input_file) && ispath(DayModule.ans1_file)
-                    @test DayModule.star1(DayModule.input_file) == parse(Int, readline(DayModule.ans1_file))
+                    @test string(DayModule.star1(DayModule.input_file)) == readline(DayModule.ans1_file)
                 else
-                    @test_skip DayModule.star1(DayModule.input_file) == parse(Int, readline(DayModule.ans1_file))
+                    @test_skip string(DayModule.star1(DayModule.input_file)) == readline(DayModule.ans1_file)
                 end
 
                 if ispath(DayModule.input_file) && ispath(DayModule.ans2_file)
-                    @test DayModule.star2(DayModule.input_file) == parse(Int, readline(DayModule.ans2_file))
+                    @test string(DayModule.star2(DayModule.input_file)) == readline(DayModule.ans2_file)
                 else
-                    @test_skip DayModule.star2(DayModule.input_file) == parse(Int, readline(DayModule.ans2_file))
+                    @test_skip string(DayModule.star2(DayModule.input_file)) == readline(DayModule.ans2_file)
                 end
             end
         end
