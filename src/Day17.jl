@@ -92,7 +92,7 @@ function star1(input=stdin)
         if opcode == 0
             @debug "adv" operand, combo_operand
 
-            reg_A = reg_A ÷ 2^combo_operand
+            reg_A = reg_A >> combo_operand
 
             instruction_pointer += 2
         elseif opcode == 1
@@ -130,13 +130,13 @@ function star1(input=stdin)
         elseif opcode == 6
             @debug "bdv" operand, combo_operand
 
-            reg_B = reg_A ÷ 2^combo_operand
+            reg_B = reg_A >> combo_operand
 
             instruction_pointer += 2
         elseif opcode == 7
             @debug "cdv" operand, combo_operand
 
-            reg_C = reg_A ÷ 2^combo_operand
+            reg_C = reg_A >> combo_operand
 
             instruction_pointer += 2
         end
@@ -187,7 +187,7 @@ function star2(input=stdin)
 
             if opcode == 0
                 # adv
-                reg_A = reg_A ÷ 2^combo_operand
+                reg_A = reg_A >> combo_operand
 
                 instruction_pointer += 2
             elseif opcode == 1
@@ -219,12 +219,12 @@ function star2(input=stdin)
                 instruction_pointer += 2
             elseif opcode == 6
                 # bdv
-                reg_B = reg_A ÷ 2^combo_operand
+                reg_B = reg_A >> combo_operand
 
                 instruction_pointer += 2
             elseif opcode == 7
                 # cdv
-                reg_C = reg_A ÷ 2^combo_operand
+                reg_C = reg_A >> combo_operand
 
                 instruction_pointer += 2
             end
