@@ -142,7 +142,7 @@ function star1(input=stdin)
         end
     end
 
-    return output
+    return join(output, ",")
 end
 
 hint1 = """
@@ -155,7 +155,7 @@ hint1 = """
 
 function test_hints_star1()
     @testset "Star 1 hints" begin
-        @test star1(IOBuffer(hint1)) == [4,6,3,5,6,3,5,2,1,0]
+        @test star1(IOBuffer(hint1)) == "4,6,3,5,6,3,5,2,1,0"
     end
 end
 
