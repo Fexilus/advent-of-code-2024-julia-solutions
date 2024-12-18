@@ -35,19 +35,7 @@ function get_uncorrupted_neighbors(corruptions, pos)
     end
 end
 
-function star1(input=stdin; size=(71, 71), fallen_bytes=1024)
-    start = CartesianIndex(0 + 1, 0 + 1)
-    stop = CartesianIndex(size...)
-
-    corruptions = falses(size)
-
-    for line in Iterators.take(eachline(input), fallen_bytes)
-        corrupted_index = parse_line(line)
-        corruptions[corrupted_index] = true
-    end
-
-    @debug "Map:" corruptions
-    
+function shortest_path(corruptions, start, stop)
     visited = Set{CartesianIndex}()
     unexplored = PriorityQueue(start => 0)
 
@@ -67,6 +55,22 @@ function star1(input=stdin; size=(71, 71), fallen_bytes=1024)
 
         push!(visited, pos)
     end
+end
+
+function star1(input=stdin; size=(71, 71), fallen_bytes=1024)
+    start = CartesianIndex(0 + 1, 0 + 1)
+    stop = CartesianIndex(size...)
+
+    corruptions = falses(size)
+
+    for line in Iterators.take(eachline(input), fallen_bytes)
+        corrupted_index = parse_line(line)
+        corruptions[corrupted_index] = true
+    end
+
+    @debug "Map:" corruptions
+   
+    return shortest_path(corruptions, start, stop)
 end
 
 hint1 = """
@@ -103,7 +107,20 @@ function test_hints_star1()
     end
 end
 
-function star2(input=stdin)
+function star2(input=stdin; size=(71, 71))
+    start = CartesianIndex(0 + 1, 0 + 1)
+    stop = CartesianIndex(size...)
+
+    corruptions = falses(size)
+
+    for line in eachline(input)
+        corrupted_index = parse_line(line)
+        corruptions[corrupted_index] = true
+        
+        if isnothing(shortest_path(corruptions, start, stop))
+            return corrupted_index
+        end
+    end 
 end
 
 hint2 = """
