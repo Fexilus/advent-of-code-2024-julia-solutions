@@ -118,17 +118,14 @@ function star2(input=stdin; size=(71, 71))
         corruptions[corrupted_index] = true
         
         if isnothing(shortest_path(corruptions, start, stop))
-            return corrupted_index
+            return "$(corrupted_index[1] - 1),$(corrupted_index[2] - 1)"
         end
     end 
 end
 
-hint2 = """
-    """
-
 function test_hints_star2()
     @testset "Star 2 hints" begin
-        #@test star2(IOBuffer(hint2)) ==
+        @test star2(IOBuffer(hint1); size=(7, 7)) == "6,1"
     end
 end
 
