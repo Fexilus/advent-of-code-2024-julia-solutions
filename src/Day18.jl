@@ -2,6 +2,7 @@ module Day18
 
 using Test
 
+using OffsetArrays: Origin
 using DataStructures: PriorityQueue, dequeue_pair!
 
 using ..Utils: DATA_DIR
@@ -18,11 +19,7 @@ input_file = joinpath(DATA_DIR, "day18.input")
 ans1_file = joinpath(DATA_DIR, "day18.ans1")
 ans2_file = joinpath(DATA_DIR, "day18.ans2")
 
-function parse_line(line)
-    m = match(r"(\d+),(\d+)", line)
-
-    return CartesianIndex((parse.(Int, m.captures) .+ 1)...)
-end
+parse_line(line) = CartesianIndex(parse.(Int, match(r"(\d+),(\d+)", line).captures)...)
 
 function get_uncorrupted_neighbors(corruptions, pos)
     neighbor_shifts = [CartesianIndex(-1, 0),
@@ -57,18 +54,18 @@ function shortest_path(corruptions, start, stop)
     end
 end
 
-function star1(input=stdin; size=(71, 71), fallen_bytes=1024)
-    start = CartesianIndex(0 + 1, 0 + 1)
-    stop = CartesianIndex(size...)
+function star1(input=stdin; max_indices=(70, 70), fallen_bytes=1024)
+    start = CartesianIndex(0, 0)
+    stop = CartesianIndex(max_indices)
 
-    corruptions = falses(size)
+    corruptions = Origin(0)(falses(max_indices .+ 1))
 
     for line in Iterators.take(eachline(input), fallen_bytes)
         corrupted_index = parse_line(line)
         corruptions[corrupted_index] = true
     end
 
-    @debug "Map:" corruptions
+    @debug "Map:" corruptions'
    
     return shortest_path(corruptions, start, stop)
 end
@@ -103,29 +100,29 @@ hint1 = """
 
 function test_hints_star1()
     @testset "Star 1 hints" begin
-        @test star1(IOBuffer(hint1); size=(7, 7), fallen_bytes=12) == 22
+        @test star1(IOBuffer(hint1); max_indices=(6, 6), fallen_bytes=12) == 22
     end
 end
 
-function star2(input=stdin; size=(71, 71))
-    start = CartesianIndex(0 + 1, 0 + 1)
-    stop = CartesianIndex(size...)
+function star2(input=stdin; max_indices=(70, 70))
+    start = CartesianIndex(0, 0)
+    stop = CartesianIndex(max_indices)
 
-    corruptions = falses(size)
+    corruptions = Origin(0)(falses(max_indices .+ 1))
 
     for line in eachline(input)
         corrupted_index = parse_line(line)
         corruptions[corrupted_index] = true
-        
+
         if isnothing(shortest_path(corruptions, start, stop))
-            return "$(corrupted_index[1] - 1),$(corrupted_index[2] - 1)"
+            return join(Tuple(corrupted_index), ",")
         end
     end 
 end
 
 function test_hints_star2()
     @testset "Star 2 hints" begin
-        @test star2(IOBuffer(hint1); size=(7, 7)) == "6,1"
+        @test star2(IOBuffer(hint1); max_indices=(6, 6)) == "6,1"
     end
 end
 
