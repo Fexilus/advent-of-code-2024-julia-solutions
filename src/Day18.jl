@@ -2,6 +2,8 @@ module Day18
 
 using Test
 
+using DataStructures: PriorityQueue, dequeue_pair!
+
 using ..Utils: DATA_DIR
 
 export input_file
@@ -16,15 +18,88 @@ input_file = joinpath(DATA_DIR, "day18.input")
 ans1_file = joinpath(DATA_DIR, "day18.ans1")
 ans2_file = joinpath(DATA_DIR, "day18.ans2")
 
-function star1(input=stdin)
+function parse_line(line)
+    m = match(r"(\d+),(\d+)", line)
+
+    return CartesianIndex((parse.(Int, m.captures) .+ 1)...)
+end
+
+function get_uncorrupted_neighbors(corruptions, pos)
+    neighbor_shifts = [CartesianIndex(-1, 0),
+                       CartesianIndex(0, 1),
+                       CartesianIndex(1, 0),
+                       CartesianIndex(0, -1)]
+
+    return filter(pos .+ neighbor_shifts) do new_pos
+        return checkbounds(Bool, corruptions, new_pos) && !corruptions[new_pos]
+    end
+end
+
+function star1(input=stdin; size=(71, 71), fallen_bytes=1024)
+    start = CartesianIndex(0 + 1, 0 + 1)
+    stop = CartesianIndex(size...)
+
+    corruptions = falses(size)
+
+    for line in Iterators.take(eachline(input), fallen_bytes)
+        corrupted_index = parse_line(line)
+        corruptions[corrupted_index] = true
+    end
+
+    @debug "Map:" corruptions
+    
+    visited = Set{CartesianIndex}()
+    unexplored = PriorityQueue(start => 0)
+
+    while !isempty(unexplored)
+        pos, score = dequeue_pair!(unexplored)
+
+        if pos == stop
+            return score
+        end
+
+        for next_pos in get_uncorrupted_neighbors(corruptions, pos)
+            if next_pos ∉ visited
+                unexplored[next_pos] = min(score + 1,
+                                           get(unexplored, next_pos, Inf))
+            end
+        end
+
+        push!(visited, pos)
+    end
 end
 
 hint1 = """
+    5,4
+    4,2
+    4,5
+    3,0
+    2,1
+    6,3
+    2,4
+    1,5
+    0,6
+    3,3
+    2,6
+    5,1
+    1,2
+    5,5
+    2,5
+    6,5
+    1,4
+    0,4
+    6,4
+    1,1
+    6,1
+    1,0
+    0,5
+    1,6
+    2,0
     """
 
 function test_hints_star1()
     @testset "Star 1 hints" begin
-        #@test star1(IOBuffer(hint1)) ==
+        @test star1(IOBuffer(hint1); size=(7, 7), fallen_bytes=12) == 22
     end
 end
 
