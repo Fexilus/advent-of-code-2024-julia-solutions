@@ -2,8 +2,6 @@ module Day19
 
 using Test
 
-using Memoization
-
 using ..Utils: DATA_DIR
 
 export input_file
@@ -79,7 +77,7 @@ function test_hints_star1()
     end
 end
 
-@memoize function ways_to_construct(pattern, towels)
+function ways_to_construct(pattern, towels, cache)
     @debug "" pattern
 
     if isempty(pattern)
@@ -89,7 +87,14 @@ end
     options = 0
     for towel in towels
         if startswith(pattern, towel)
-            options += ways_to_construct(chopprefix(pattern, towel), towels)
+            rest_pattern = chopprefix(pattern, towel)
+
+            # The default get has to be lazy in evaluating the recursion
+            if rest_pattern ∉ keys(cache)
+                cache[rest_pattern] = ways_to_construct(rest_pattern, towels, cache)
+            end
+
+            options += cache[rest_pattern]
         end
     end
 
@@ -99,8 +104,10 @@ end
 function star2(input=stdin)
     towels, patterns = parse_input(input)
 
+    cache = Dict{String, Int}()
+
     return sum(patterns) do pattern
-        return ways_to_construct(pattern, towels)
+        return ways_to_construct(pattern, towels, cache)
     end
 end
 
