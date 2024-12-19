@@ -38,11 +38,9 @@ function can_construct(pattern, towels)
     end
 
     for towel in towels
-        if length(pattern) ≥ length(towel)
-            if pattern[1:length(towel)] == towel
-                if can_construct(pattern[length(towel)+1:end], towels)
-                    return true
-                end
+        if startswith(pattern, towel)
+            if can_construct(chopprefix(pattern, towel), towels)
+                return true
             end
         end
     end
@@ -90,10 +88,8 @@ end
 
     options = 0
     for towel in towels
-        if length(pattern) ≥ length(towel)
-            if pattern[1:length(towel)] == towel
-                options += ways_to_construct(pattern[length(towel)+1:end], towels)
-            end
+        if startswith(pattern, towel)
+            options += ways_to_construct(chopprefix(pattern, towel), towels)
         end
     end
 
