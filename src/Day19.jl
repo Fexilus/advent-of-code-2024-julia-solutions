@@ -2,6 +2,8 @@ module Day19
 
 using Test
 
+using Memoization
+
 using ..Utils: DATA_DIR
 
 export input_file
@@ -79,15 +81,36 @@ function test_hints_star1()
     end
 end
 
-function star2(input=stdin)
+@memoize function ways_to_construct(pattern, towels)
+    @debug "" pattern
+
+    if isempty(pattern)
+        return 1
+    end
+
+    options = 0
+    for towel in towels
+        if length(pattern) ≥ length(towel)
+            if pattern[1:length(towel)] == towel
+                options += ways_to_construct(pattern[length(towel)+1:end], towels)
+            end
+        end
+    end
+
+    return options
 end
 
-hint2 = """
-    """
+function star2(input=stdin)
+    towels, patterns = parse_input(input)
+
+    return sum(patterns) do pattern
+        return ways_to_construct(pattern, towels)
+    end
+end
 
 function test_hints_star2()
     @testset "Star 2 hints" begin
-        #@test star2(IOBuffer(hint2)) ==
+        @test star2(IOBuffer(hint1)) == 16
     end
 end
 
