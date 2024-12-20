@@ -55,7 +55,11 @@ end
 end
 
 function find_unexplored_neighbors(walls, pos, visited, distance=1)
-    return filter(pos .+ steps_n_away(distance)) do neighbor
+    new_positions = Iterators.map(steps_n_away(distance)) do step
+        return pos + step
+    end
+
+    return Iterators.filter(new_positions) do neighbor
         return (checkbounds(Bool, walls, neighbor)
                 && !walls[neighbor]
                 && neighbor ∉ visited)
@@ -76,10 +80,8 @@ function find_distances(walls, start)
 
         if isempty(next_pos_cand)
             cur_pos = nothing
-        elseif length(next_pos_cand) == 1
-            cur_pos = only(next_pos_cand)
         else
-            error("Map has more than one path")
+            cur_pos = only(next_pos_cand)
         end
     end
 
@@ -119,10 +121,8 @@ function star1(input=stdin; minimum_savings=100)
 
         if isempty(next_pos_cand)
             cur_pos = nothing
-        elseif length(next_pos_cand) == 1
-            cur_pos = only(next_pos_cand)
         else
-            error("Map is not one path")
+            cur_pos = only(next_pos_cand)
         end
     end
 
@@ -169,10 +169,8 @@ function star2(input=stdin; minimum_savings=100)
 
         if isempty(next_pos_cand)
             cur_pos = nothing
-        elseif length(next_pos_cand) == 1
-            cur_pos = only(next_pos_cand)
         else
-            error("Map is not one path")
+            cur_pos = only(next_pos_cand)
         end
     end
 
