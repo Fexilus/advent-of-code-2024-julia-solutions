@@ -38,18 +38,31 @@ function parse_input(input)
     return walls, start, exit
 end
 
-function find_unexplored_neighbors(map, pos, visited)
-    neighbors = pos .+ [CartesianIndex(-1, 0),
-                        CartesianIndex(0, 1),
-                        CartesianIndex(1, 0),
-                        CartesianIndex(0, -1)]
+@memoize function steps_n_away(n)
+    if n ≤ 0
+        return Set([CartesianIndex(0, 0)])
+    end
 
-    next_pos_cand = filter(p -> checkbounds(Bool, map, p), neighbors)
-    next_pos_cand = filter(p -> !map[p], next_pos_cand)
-    return filter(∉(visited), next_pos_cand)
+    single_steps = [CartesianIndex(-1, 0),
+                    CartesianIndex(0, 1),
+                    CartesianIndex(1, 0),
+                    CartesianIndex(0, -1)]
+
+    return Set(ps + ss
+               for ps in steps_n_away(n - 1)
+               for ss in single_steps
+               if ps + ss ∉ steps_n_away(n - 2))
 end
 
-function find_distances(map, start)
+function find_unexplored_neighbors(walls, pos, visited, distance=1)
+    return filter(pos .+ steps_n_away(distance)) do neighbor
+        return (checkbounds(Bool, walls, neighbor)
+                && !walls[neighbor]
+                && neighbor ∉ visited)
+    end
+end
+
+function find_distances(walls, start)
     distances = Dict{CartesianIndex{2}, Int}()
 
     cur_pos = start
@@ -59,33 +72,18 @@ function find_distances(map, start)
 
         distance += 1
         
-        next_pos_cand = find_unexplored_neighbors(map, cur_pos, keys(distances))
+        next_pos_cand = find_unexplored_neighbors(walls, cur_pos, keys(distances))
 
         if isempty(next_pos_cand)
             cur_pos = nothing
         elseif length(next_pos_cand) == 1
             cur_pos = only(next_pos_cand)
         else
-            error("Map is not one path")
+            error("Map has more than one path")
         end
     end
 
     return distances
-end
-
-function find_unexplored_2neighbors(map, pos, visited)
-    neighbors = pos .+ [CartesianIndex(-2, 0),
-                        CartesianIndex(-1, 1),
-                        CartesianIndex(0, 2),
-                        CartesianIndex(1, 1),
-                        CartesianIndex(2, 0),
-                        CartesianIndex(1, -1),
-                        CartesianIndex(0, -2),
-                        CartesianIndex(-1, -1)]
-
-    next_pos_cand = filter(p -> checkbounds(Bool, map, p), neighbors)
-    next_pos_cand = filter(p -> !map[p], next_pos_cand)
-    return filter(∉(visited), next_pos_cand)
 end
 
 function star1(input=stdin; minimum_savings=100)
@@ -103,7 +101,7 @@ function star1(input=stdin; minimum_savings=100)
     while cur_pos != exit
         push!(visited, cur_pos) 
 
-        cheat_candidates = find_unexplored_2neighbors(walls, cur_pos, visited)
+        cheat_candidates = find_unexplored_neighbors(walls, cur_pos, visited, 2)
 
         for cheat_pos in cheat_candidates
             cheat_time = distance + distance_to_exit[cheat_pos] + 2
@@ -136,41 +134,6 @@ function test_hints_star1()
     end
 end
 
-@memoize function steps_n_away(n)
-    if n ≤ 0
-        return Set([CartesianIndex(0, 0)])
-    end
-
-    single_steps = [CartesianIndex(-1, 0),
-                    CartesianIndex(0, 1),
-                    CartesianIndex(1, 0),
-                    CartesianIndex(0, -1)]
-
-    return Set(ps + ss
-               for ps in steps_n_away(n - 1)
-               for ss in single_steps
-               if ps + ss ∉ steps_n_away(n - 2))
-end
-
-function find_unexplored_n_neighbors(map, pos, visited, max_n, min_n=1)
-    neighbor_distances = Dict{CartesianIndex{2}, Int}()
-
-    for i in min_n:max_n
-        for step in steps_n_away(i)
-            i_neighbor = pos + step
-
-            if (checkbounds(Bool, map, i_neighbor)
-                && !map[i_neighbor]
-                && i_neighbor ∉ visited)
-
-                neighbor_distances[i_neighbor] = i
-            end
-        end
-    end
-
-    return neighbor_distances
-end
-
 function star2(input=stdin; minimum_savings=100)
     walls, start, exit = parse_input(input)
   
@@ -186,16 +149,16 @@ function star2(input=stdin; minimum_savings=100)
     while cur_pos != exit
         push!(visited, cur_pos) 
 
-        cheat_candidates = find_unexplored_n_neighbors(walls, cur_pos, visited, 20)
+        for cheat_steps in 2:20
+            cheat_candidates = find_unexplored_neighbors(walls, cur_pos, visited, cheat_steps)
 
-        @debug "" cheat_candidates
+            for cheat_pos in cheat_candidates
+                cheat_time = distance + distance_to_exit[cheat_pos] + cheat_steps
+                savings = time_to_beat - cheat_time
 
-        for (cheat_pos, steps) in cheat_candidates
-            cheat_time = distance + distance_to_exit[cheat_pos] + steps
-            savings = time_to_beat - cheat_time
-
-            if savings ≥ minimum_savings
-                good_cheats[(cur_pos, cheat_pos)] = savings
+                if savings ≥ minimum_savings
+                    good_cheats[(cur_pos, cheat_pos)] = savings
+                end
             end
         end
 
