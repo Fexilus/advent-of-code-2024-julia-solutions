@@ -3,6 +3,7 @@ module Day20
 using Test
 
 using DataStructures: PriorityQueue, dequeue_pair!
+using Memoization
 
 using ..Utils: DATA_DIR
 
@@ -135,39 +136,36 @@ function test_hints_star1()
     end
 end
 
-function find_unexplored_n_neighbors(map, pos, visited, n)
-    steps = [CartesianIndex(-1, 0),
-             CartesianIndex(0, 1),
-             CartesianIndex(1, 0),
-             CartesianIndex(0, -1)]
+@memoize function steps_n_away(n)
+    if n ≤ 0
+        return Set([CartesianIndex(0, 0)])
+    end
 
+    single_steps = [CartesianIndex(-1, 0),
+                    CartesianIndex(0, 1),
+                    CartesianIndex(1, 0),
+                    CartesianIndex(0, -1)]
+
+    return Set(ps + ss
+               for ps in steps_n_away(n - 1)
+               for ss in single_steps
+               if ps + ss ∉ steps_n_away(n - 2))
+end
+
+function find_unexplored_n_neighbors(map, pos, visited, max_n, min_n=1)
     neighbor_distances = Dict{CartesianIndex{2}, Int}()
-    last_neighbors = Set([pos])
-    lastlast_neighbors = Set()
 
-    for i in 1:n
-        new_neighbors = Set{CartesianIndex{2}}()
+    for i in min_n:max_n
+        for step in steps_n_away(i)
+            i_neighbor = pos + step
 
-        for prev_neighbor in last_neighbors
-            for step in steps
-                new_neighbor = prev_neighbor + step
+            if (checkbounds(Bool, map, i_neighbor)
+                && !map[i_neighbor]
+                && i_neighbor ∉ visited)
 
-                if new_neighbor ∉ last_neighbors
-                    push!(new_neighbors, new_neighbor)
-                end
-
-                if (new_neighbor ∉ keys(neighbor_distances)
-                    && checkbounds(Bool, map, new_neighbor)
-                    && !map[new_neighbor]
-                    && new_neighbor ∉ visited)
-
-                    neighbor_distances[new_neighbor] = i
-                end
+                neighbor_distances[i_neighbor] = i
             end
         end
-
-        lastlast_neighbors = last_neighbors
-        last_neighbors = new_neighbors
     end
 
     return neighbor_distances
