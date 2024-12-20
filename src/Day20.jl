@@ -91,7 +91,7 @@ end
 function star1(input=stdin; minimum_savings=100)
     walls, start, exit = parse_input(input)
   
-    good_cheats = Dict{Tuple{CartesianIndex, CartesianIndex}, Int}()
+    good_cheats = 0
 
     distance_to_exit = find_distances(walls, exit)
     time_to_beat = distance_to_exit[start]
@@ -110,7 +110,7 @@ function star1(input=stdin; minimum_savings=100)
             savings = time_to_beat - cheat_time
 
             if savings ≥ minimum_savings
-                good_cheats[(cur_pos, cheat_pos)] = savings
+                good_cheats += 1
             end
         end
 
@@ -126,7 +126,7 @@ function star1(input=stdin; minimum_savings=100)
         end
     end
 
-    return length(good_cheats)
+    return good_cheats
 end
 
 function test_hints_star1()
@@ -137,7 +137,7 @@ end
 function star2(input=stdin; minimum_savings=100)
     walls, start, exit = parse_input(input)
   
-    good_cheats = Dict{Tuple{CartesianIndex, CartesianIndex}, Int}()
+    good_cheats = 0
 
     distance_to_exit = find_distances(walls, exit)
     time_to_beat = distance_to_exit[start]
@@ -157,7 +157,7 @@ function star2(input=stdin; minimum_savings=100)
                 savings = time_to_beat - cheat_time
 
                 if savings ≥ minimum_savings
-                    good_cheats[(cur_pos, cheat_pos)] = savings
+                    good_cheats += 1
                 end
             end
         end
@@ -174,7 +174,7 @@ function star2(input=stdin; minimum_savings=100)
         end
     end
 
-    return length(good_cheats)
+    return good_cheats
 end
 
 function test_hints_star2()
