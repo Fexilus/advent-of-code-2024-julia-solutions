@@ -130,12 +130,8 @@ function star1(input=stdin; minimum_savings=100)
     return length(good_cheats)
 end
 
-hint1 = """
-    """
-
 function test_hints_star1()
     @testset "Star 1 hints" begin
-        #@test star1(IOBuffer(hint1)) ==
     end
 end
 
@@ -222,12 +218,8 @@ function star2(input=stdin; minimum_savings=100)
     return length(good_cheats)
 end
 
-hint2 = """
-    """
-
 function test_hints_star2()
     @testset "Star 2 hints" begin
-        #@test star2(IOBuffer(hint2)) ==
     end
 end
 
